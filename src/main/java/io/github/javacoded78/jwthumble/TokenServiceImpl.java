@@ -1,6 +1,7 @@
 package io.github.javacoded78.jwthumble;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -22,16 +23,12 @@ public class TokenServiceImpl implements TokenService {
      *
      * @param secret secret of key for JWT token generation
      */
-    public TokenServiceImpl(
-            final String secret
-    ) {
+    public TokenServiceImpl(final String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     @Override
-    public String create(
-            final TokenParameters params
-    ) {
+    public String create(final TokenParameters params) {
         Claims claims = Jwts.claims()
                 .subject(params.getSubject())
                 .add(params.getClaims())
@@ -45,25 +42,25 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public boolean isExpired(
-            final String token
-    ) {
-        Jws<Claims> claims = Jwts
-                .parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token);
-        return claims.getPayload()
-                .getExpiration()
-                .before(new Date());
+    public boolean isExpired(final String token) {
+        try {
+            Jws<Claims> claims = Jwts
+                    .parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+            return claims.getPayload()
+                    .getExpiration()
+                    .before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 
     @Override
-    public boolean has(
-            final String token,
-            final String key,
-            final Object value
-    ) {
+    public boolean has(final String token,
+                       final String key,
+                       final Object value) {
         Jws<Claims> claims = Jwts
                 .parser()
                 .verifyWith(this.key)
@@ -75,9 +72,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String getSubject(
-            final String token
-    ) {
+    public String getSubject(final String token) {
         return Jwts
                 .parser()
                 .verifyWith(key)
@@ -88,9 +83,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Map<String, Object> claims(
-            final String token
-    ) {
+    public Map<String, Object> claims(final String token) {
         Jws<Claims> claims = Jwts
                 .parser()
                 .verifyWith(key)

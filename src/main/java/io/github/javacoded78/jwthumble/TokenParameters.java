@@ -5,143 +5,138 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Builder(
-        builderMethodName = "hiddenBuilder",
-        access = AccessLevel.PRIVATE
-)
 @Getter
+@Builder(builderMethodName = "hiddenBuilder", access = AccessLevel.PRIVATE)
 public class TokenParameters {
 
     /**
      * A map of claims to be put in JWT token.
      */
-    private Map<String, Object> claims;
+    private final Map<String, Object> claims;
 
     /**
      * The "sub" of JWT token.
      */
-    private String subject;
+    private final String subject;
 
     /**
      * Date when JWT token was issued.
      */
-    private Date issuedAt;
+    private final Date issuedAt;
 
     /**
      * Date when JWT token will be expired.
      */
-    private Date expiredAt;
+    private final Date expiredAt;
 
     /**
-     * Creates a builder for io.github.javacoded78.jwthumble.TokenParameters.
+     * Creates a builder for TokenParameters.
      *
      * @param subject  sub of JWT token
      * @param duration duration between token issuing and expiration date
      * @return TokenParametersBuilder
      */
-    public static TokenParametersBuilder builder(
-            final String subject,
-            final Duration duration
-    ) {
+    public static TokenParametersBuilder builder(final String subject,
+                                                 final Duration duration) {
         Date issuedAt = new Date();
         return hiddenBuilder()
                 .claims(new HashMap<>())
                 .issuedAt(issuedAt)
                 .subject(subject)
-                .expiredAt(new Date(
-                        issuedAt.getTime()
-                                + 1000 * duration.get(ChronoUnit.SECONDS)
-                ));
+                .expiredAt(new Date(issuedAt.getTime() + duration.toMillis()));
     }
 
     public static class TokenParametersBuilder {
 
         /**
-         * Add claims to parameters.
-         *
-         * @param key   the key of claim
-         * @param value the value of claim
-         * @return TokenParametersBuilder
+         * A map of claims to be put in JWT token.
          */
-        public TokenParametersBuilder claim(
-                final String key,
-                final Object value
-        ) {
+        private final Map<String, Object> claims = new HashMap<>();
+
+        /**
+         * The "sub" of JWT token.
+         */
+        private String subject;
+
+        /**
+         * Date when JWT token was issued.
+         */
+        private Date issuedAt;
+
+        /**
+         * Date when JWT token will be expired.
+         */
+        private Date expiredAt;
+
+        /**
+         * Add a claim to parameters.
+         *
+         * @param key   the key of the claim
+         * @param value the value of the claim
+         * @return the current TokenParametersBuilder instance
+         */
+        public TokenParametersBuilder claim(final String key,
+                                            final Object value) {
             this.claims.put(key, value);
             return this;
         }
 
         /**
-         * Adds claims to parameters.
+         * Adds multiple claims to parameters.
          *
          * @param claims a map of claims
-         * @return TokenParametersBuilder
+         * @return the current TokenParametersBuilder instance
          */
-        public TokenParametersBuilder claims(
-                final Map<String, Object> claims
-        ) {
+        public TokenParametersBuilder claims(final Map<String, Object> claims) {
             this.claims.putAll(claims);
             return this;
         }
 
         /**
-         * Sets issued date for JWT token.
+         * Sets the issued date for the JWT token.
          *
-         * @param issuedAt date of issuing
-         * @return TokenParametersBuilder
+         * @param issuedAt the date of issuing
+         * @return the current TokenParametersBuilder instance
          */
-        public TokenParametersBuilder issuedAt(
-                final Date issuedAt
-        ) {
+        public TokenParametersBuilder issuedAt(final Date issuedAt) {
             this.issuedAt = issuedAt;
             return this;
         }
 
         /**
-         * Sets expiration date for JWT token.
+         * Sets the expiration date for the JWT token.
          *
-         * @param expiredAt date of expiration
-         * @return TokenParametersBuilder
+         * @param expiredAt the date of expiration
+         * @return the current TokenParametersBuilder instance
          */
-        public TokenParametersBuilder expiredAt(
-                final Date expiredAt
-        ) {
+        public TokenParametersBuilder expiredAt(final Date expiredAt) {
             this.expiredAt = expiredAt;
             return this;
         }
 
         /**
-         * Sets subject to parameters.
+         * Sets the subject for the JWT token.
          *
-         * @param subject subject of JWT token
-         * @return TokenParametersBuilder
+         * @param subject the subject of the JWT token
+         * @return the current TokenParametersBuilder instance
          */
-        public TokenParametersBuilder subject(
-                final String subject
-        ) {
+        public TokenParametersBuilder subject(final String subject) {
             this.subject = subject;
             return this;
         }
 
         /**
-         * Builds final object.
+         * Builds and returns the final TokenParameters object.
          *
-         * @return io.github.javacoded78.jwthumble.TokenParameters object
+         * @return the built TokenParameters object
          */
         public TokenParameters build() {
-            return new TokenParameters(
-                    claims,
-                    subject,
-                    issuedAt,
-                    expiredAt
-            );
+            return new TokenParameters(claims, subject, issuedAt, expiredAt);
         }
-
     }
 
 }
