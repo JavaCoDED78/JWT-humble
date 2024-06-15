@@ -4,6 +4,8 @@
 [![Hits-of-Code](https://hitsofcode.com/github/javacoded78/jwt-humble?branch=main)](https://hitsofcode.com/github/javacoded78/jwt-humble/view?branch=main)
 [![mvn](https://github.com/javacoded78/jwt-humble/actions/workflows/maven-build.yml/badge.svg)](https://github.com/javacoded78/jwt-humble/actions/workflows/maven-build.yml)
 
+[![codecov](https://codecov.io/gh/JavaCoDED78/JWT-humble/graph/badge.svg?token=GZRBG9ALU8)](https://codecov.io/gh/JavaCoDED78/JWT-humble)
+
 This repository is an open-source Java library for fast and convenient using of
 JWT tokens in your Java applications.
 
