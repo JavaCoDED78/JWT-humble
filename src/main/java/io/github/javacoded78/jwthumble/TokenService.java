@@ -2,6 +2,9 @@ package io.github.javacoded78.jwthumble;
 
 import java.util.Map;
 
+/**
+ * Interface of TokenService.
+ */
 public interface TokenService {
 
     /**
