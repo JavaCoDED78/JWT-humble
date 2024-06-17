@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.javacoded78</groupId>
     <artifactId>jwt-humble</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>JWT library for Java applications.</description>
     <url>https://github.com/javacoded78/jwt-humble/</url>
