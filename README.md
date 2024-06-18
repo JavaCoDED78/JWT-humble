@@ -13,6 +13,7 @@ This repository is an open-source Java library for fast and convenient using of 
 * [How to use](#how-to-use)
     * [Instantiate a service](#instantiate-a-service)
     * [Persist tokens](#persist-tokens)
+    * [Invalidate token](#invalidate-jwt-token)
     * [Create token](#create-jwt-token)
     * [If token is expired](#check-if-jwt-token-is-expired)
     * [If token has claim](#check-if-jwt-token-has-claim)
@@ -31,7 +32,7 @@ With Maven add dependency to your `pom.xml`.
 <dependency>
     <groupId>io.github.javacoded78</groupId>
     <artifactId>jwt-humble</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -55,7 +56,7 @@ After, you can call available methods and use library.
 
 ### Persist tokens
 
-Library supports `PersistentTokenServiceImpl` implementation with saving tokens to `TokenStorage`.
+Library supports `PersistentTokenService` implementation with saving tokens to `TokenStorage`.
 
 With such approach you can store tokens in Redis or in-memory Map and create new one if no specified tokens exist,
 otherwise, stored JWT token would be returned.
@@ -76,18 +77,17 @@ public class Main {
 
 With Redis you need to pass `RedisTokenStorageImpl` object to constructor.
 
-To create `RedisTokenStorageImpl` you need to pass JedisPool
+To create `RedisTokenStorageImpl` you need to pass `JedisPool` / host and port / host, port, username and password.
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String secret = "aGZiYmtiYWllYmNpZWFpZWJsZWNldWNlY2xhZWNhaWJlbGNhZWN3Q0VCV0VXSUM=";
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setJmxEnabled(false);
-        JedisPool jedisPool = new JedisPool(config, "localhost", 6379);
-        TokenStorage tokenStorage = new RedisTokenStorageImpl(jedisPool);
-        TokenService tokenService = new PersistentTokenServiceImpl(secret, tokenStorage);
-    }
+  public static void main(String[] args) {
+    String secret = "aGZiYmtiYWllYmNpZWFpZWJsZWNldWNlY2xhZWNhaWJlbGNhZWN3Q0VCV0VXSUM=";
+    String host = "localhost";
+    int port = 6379;
+    TokenStorage tokenStorage = new RedisTokenStorageImpl(host, port);
+    PersistentTokenService tokenService = new PersistentTokenServiceImpl(secret, tokenStorage);
+  }
 }
 ```
 
@@ -95,6 +95,39 @@ You can choose your own `RedisSchema` which is used to generate a Redis key for 
 Just pass it as argument in `RedisTokenStorageImpl` constructor.
 
 By default, library uses key `"tokens:" + subject + ":" + type`.
+
+### Invalidate JWT token
+
+With `PersistentTokenService` you can invalidate token by token itself or by subject and token type.
+If first option is chosen, all keys with such token values will be deleted.
+
+If token will be deleted from storage you receive `true`.
+
+```java
+public class Main {
+    public static void main(String[] args) {
+      String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
+        boolean deleted = persistentTokenService.invalidate(token);
+        System.out.println(deleted);
+    }
+}
+```
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        boolean deleted = persistentTokenService.invalidate(
+                TokenParameters.builder(
+                                "user@example.com",
+                                "access",
+                                Duration.of(1, ChronoUnit.HOURS)
+                        )
+                        .build()
+        );
+        System.out.println(deleted);
+    }
+}
+```
 
 ### Create JWT token
 
@@ -104,7 +137,7 @@ To create token call method `create(TokenParameters params)` on `TokenService` o
 public class Main {
     public static void main(String[] args) {
         String token = tokenService.create(
-                TokenParameters.builder("user@test.com", Duration.of(1, ChronoUnit.HOURS))
+                TokenParameters.builder("user@test.com", "access", Duration.of(1, ChronoUnit.HOURS))
                         .build()
         );
         System.out.println(token);
@@ -131,6 +164,18 @@ class Main {
     public static void main(String[] args) {
         String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
         boolean expired = tokenService.isExpired(token);
+        System.out.println(expired);
+    }
+}
+```
+You can also check expiration with any other date.
+
+```java
+class Main {
+    public static void main(String[] args) {
+        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
+        Date date = new Date(1705911211182);
+        boolean expired = tokenService.isExpired(token, date);
         System.out.println(expired);
     }
 }

@@ -1,26 +1,48 @@
 package io.github.javacoded78.jwthumble.storage;
 
 import io.github.javacoded78.jwthumble.config.TokenParameters;
+import lombok.Getter;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Basic implementation of TokenStorage. Not thread-safe.
+ * Basic implementation of TokenStorage.
  */
 public class TokenStorageImpl implements TokenStorage {
 
     /**
      * Inner map of key-value pairs.
      */
-    private final Map<String, String> tokens;
+    private final ConcurrentHashMap<String, TokenEntry> tokens;
+
+    /**
+     * Scheduled executor for cleanup tokens.
+     */
+    private final ScheduledExecutorService scheduler;
 
     /**
      * Creates an object.
      */
     public TokenStorageImpl() {
-        this.tokens = new HashMap<>();
+        this.tokens = new ConcurrentHashMap<>();
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(
+                () -> {
+                    Date date = new Date();
+                    tokens.entrySet().removeIf(
+                            entry -> entry.getValue().isAfter(date)
+                    );
+                },
+                0,
+                1,
+                TimeUnit.SECONDS
+        );
     }
 
     private String subjectTokenKey(final String subject,
@@ -35,7 +57,8 @@ public class TokenStorageImpl implements TokenStorage {
                 params.getSubject(),
                 params.getType()
         );
-        tokens.put(tokenKey, token);
+        TokenEntry entry = new TokenEntry(token, params.getExpiredAt());
+        tokens.put(tokenKey, entry);
     }
 
     @Override
@@ -45,7 +68,11 @@ public class TokenStorageImpl implements TokenStorage {
                 params.getSubject(),
                 params.getType()
         );
-        return token.equals(tokens.get(tokenKey));
+        TokenEntry entry = tokens.get(tokenKey);
+        if (entry == null) {
+            return false;
+        }
+        return token.equals(entry.token);
     }
 
     @Override
@@ -54,14 +81,18 @@ public class TokenStorageImpl implements TokenStorage {
                 params.getSubject(),
                 params.getType()
         );
-        return tokens.get(tokenKey);
+        TokenEntry entry = tokens.get(tokenKey);
+        if (entry == null) {
+            return null;
+        }
+        return entry.token;
     }
 
     @Override
     public boolean remove(final String token) {
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<String, String> entry : tokens.entrySet()) {
-            if (entry.getValue().equals(token)) {
+        for (Map.Entry<String, TokenEntry> entry : tokens.entrySet()) {
+            if (entry.getValue().token.equals(token)) {
                 tokens.remove(entry.getKey());
                 deleted.set(true);
                 return true;
@@ -77,6 +108,31 @@ public class TokenStorageImpl implements TokenStorage {
                 params.getType()
         );
         return tokens.remove(tokenKey) != null;
+    }
+
+    @Getter
+    private static class TokenEntry {
+
+        /**
+         * Token.
+         */
+        private final String token;
+
+        /**
+         * Expiration date.
+         */
+        private final Date expiredAt;
+
+        TokenEntry(final String token,
+                   final Date expiredAt) {
+            this.token = token;
+            this.expiredAt = expiredAt;
+        }
+
+        public boolean isAfter(final Date date) {
+            return expiredAt.after(date);
+        }
+
     }
 
 }
