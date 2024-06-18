@@ -2,25 +2,24 @@ package io.github.javacoded78.jwthumble.storage;
 
 import io.github.javacoded78.jwthumble.config.TokenParameters;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentHashMap;import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Basic implementation of TokenStorage. Not thread-safe.
+ * Basic implementation of TokenStorage.
  */
 public class TokenStorageImpl implements TokenStorage {
 
     /**
      * Inner map of key-value pairs.
      */
-    private final Map<String, String> tokens;
+    private final ConcurrentHashMap<String, String> tokens;
 
     /**
      * Creates an object.
      */
     public TokenStorageImpl() {
-        this.tokens = new HashMap<>();
+        this.tokens = new ConcurrentHashMap<>();
     }
 
     private String subjectTokenKey(final String subject,
