@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Implementation of TokenService with JWT token storage.
  */
-public class PersistentTokenServiceImpl implements TokenService {
+public class PersistentTokenServiceImpl implements PersistentTokenService {
 
     /**
      * Secret key for verifying JWT token.
@@ -146,6 +146,16 @@ public class PersistentTokenServiceImpl implements TokenService {
                 .build()
                 .parseSignedClaims(token);
         return new HashMap<>(claims.getPayload());
+    }
+
+    @Override
+    public boolean invalidate(final String token) {
+        return tokenStorage.remove(token);
+    }
+
+    @Override
+    public boolean invalidate(final TokenParameters params) {
+        return tokenStorage.remove(params);
     }
 
 }

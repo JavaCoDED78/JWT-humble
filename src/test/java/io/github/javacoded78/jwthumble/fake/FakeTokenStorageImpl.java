@@ -4,6 +4,7 @@ import io.github.javacoded78.jwthumble.config.TokenParameters;
 import io.github.javacoded78.jwthumble.storage.TokenStorage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FakeTokenStorageImpl implements TokenStorage {
 
@@ -41,6 +42,28 @@ public class FakeTokenStorageImpl implements TokenStorage {
                 params.getType()
         );
         return token.equals(tokens.get(tokenKey));
+    }
+
+    @Override
+    public boolean remove(final String token) {
+        AtomicBoolean deleted = new AtomicBoolean(false);
+        for (Map.Entry<String, String> entry : tokens.entrySet()) {
+            if (entry.getValue().equals(token)) {
+                tokens.remove(entry.getKey());
+                deleted.set(true);
+                return true;
+            }
+        }
+        return deleted.get();
+    }
+
+    @Override
+    public boolean remove(final TokenParameters params) {
+        String tokenKey = subjectTokenKey(
+                params.getSubject(),
+                params.getType()
+        );
+        return tokens.remove(tokenKey) != null;
     }
 
 }

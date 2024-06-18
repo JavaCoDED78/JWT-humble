@@ -34,4 +34,20 @@ public interface TokenStorage {
      */
     String get(TokenParameters params);
 
+    /**
+     * Removes JWT token from storage.
+     *
+     * @param token JWT token to be removed
+     * @return true - if JWT token was removed, false - otherwise
+     */
+    boolean remove(String token);
+
+    /**
+     * Removes JWT token from storage.
+     *
+     * @param params params of JWT token
+     * @return true - if JWT token was removed, false - otherwise
+     */
+    boolean remove(TokenParameters params);
+
 }

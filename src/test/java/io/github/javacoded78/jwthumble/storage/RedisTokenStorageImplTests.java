@@ -127,4 +127,44 @@ class RedisTokenStorageImplTests {
         assertNull(tokenStorage.get(params));
     }
 
+    @Test
+    void invalidate_Token() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String token = "testToken";
+        tokenStorage.save(
+                token,
+                params
+        );
+
+        tokenStorage.remove(token);
+
+        String existingToken = tokenStorage.get(params);
+        assertNull(existingToken);
+    }
+
+    @Test
+    void invalidate_SubjectAndType() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String token = "testToken";
+        tokenStorage.save(
+                token,
+                params
+        );
+
+        tokenStorage.remove(params);
+
+        String existingToken = tokenStorage.get(params);
+        assertNull(existingToken);
+    }
+
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -165,6 +166,60 @@ class PersistentTokenServiceImplTests {
         System.out.println(claims.get("key1"));
         assertEquals("value1", claims.get("key1"));
         assertEquals(123, claims.get("key2"));
+    }
+
+    @Test
+    void invalidate_Token() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String token = tokenService.create(params);
+
+        tokenService.invalidate(token);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+
+        TokenParameters newParams = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String newToken = tokenService.create(newParams);
+        assertNotEquals(token, newToken);
+    }
+
+    @Test
+    void invalidate_SubjectAndType() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String token = tokenService.create(params);
+
+        tokenService.invalidate(params);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+
+        TokenParameters newParams = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String newToken = tokenService.create(newParams);
+        assertNotEquals(token, newToken);
     }
 
 }
