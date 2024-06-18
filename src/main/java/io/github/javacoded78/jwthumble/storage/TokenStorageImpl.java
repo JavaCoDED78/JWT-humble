@@ -35,11 +35,9 @@ public class TokenStorageImpl implements TokenStorage {
         scheduler.scheduleAtFixedRate(
                 () -> {
                     Date date = new Date();
-                    for (Map.Entry<String, TokenEntry> entry : tokens.entrySet()) {
-                        if (entry.getValue().isAfter(date)) {
-                            tokens.remove(entry.getKey());
-                        }
-                    }
+                    tokens.entrySet().removeIf(
+                            entry -> entry.getValue().isAfter(date)
+                    );
                 },
                 0,
                 1,
