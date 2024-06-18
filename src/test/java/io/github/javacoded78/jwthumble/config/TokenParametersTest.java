@@ -1,4 +1,4 @@
-package io.github.javacoded78.jwthumble;
+package io.github.javacoded78.jwthumble.config;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,17 +15,20 @@ class TokenParametersTest {
 
     private static String subject;
     private static Duration duration;
+    private static String type;
 
     @BeforeAll
     static void setUp() {
         subject = "testSubject";
         duration = Duration.ofMinutes(30);
+        type = "any";
     }
 
     @Test
     void shouldCreate() {
         TokenParameters tokenParameters = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .build();
@@ -43,6 +46,7 @@ class TokenParametersTest {
 
         TokenParameters tokenParameters = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .issuedAt(issuedAt)
@@ -58,6 +62,7 @@ class TokenParametersTest {
 
         TokenParameters tokenParameters = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .expiredAt(expiredAt)
@@ -73,6 +78,7 @@ class TokenParametersTest {
 
         TokenParameters tokenParameters = TokenParameters.builder(
                         baseSubject,
+                        type,
                         duration
                 )
                 .subject(subject)
@@ -89,6 +95,7 @@ class TokenParametersTest {
 
         TokenParameters tokenParameters = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .claim(key, value)
@@ -110,6 +117,7 @@ class TokenParametersTest {
 
         TokenParameters tokenParameters = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .claims(claims)

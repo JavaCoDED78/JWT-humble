@@ -1,5 +1,8 @@
-package io.github.javacoded78.jwthumble;
+package io.github.javacoded78.jwthumble.service;
 
+import io.github.javacoded78.jwthumble.config.TokenParameters;
+
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -8,7 +11,7 @@ import java.util.Map;
 public interface TokenService {
 
     /**
-     * Creates JWT token by provided parameters.
+     * Creates JWT token with provided parameters.
      *
      * @param params parameters for JWT token
      * @return JWT token
@@ -16,7 +19,7 @@ public interface TokenService {
     String create(TokenParameters params);
 
     /**
-     * Checks whether JWT token is expired by current time.
+     * Checks if JWT token is expired by current time.
      *
      * @param token JWT token to be checked
      * @return true - if JWT token expired, false - otherwise
@@ -24,7 +27,7 @@ public interface TokenService {
     boolean isExpired(String token);
 
     /**
-     * Checks whether JWT token has a key-value pair in payload.
+     * Checks if JWT token has a key-value pair in payload.
      *
      * @param token JWT token
      * @param key   key of payload
@@ -32,7 +35,9 @@ public interface TokenService {
      * @return true - if JWT token has a provided key-value pair in payload,
      * false - otherwise
      */
-    boolean has(String token, String key, Object value);
+    boolean has(String token,
+                String key,
+                Object value);
 
     /**
      * Returns "sub" of JWT token.
@@ -41,6 +46,24 @@ public interface TokenService {
      * @return "sub" of JWT token
      */
     String getSubject(String token);
+
+    /**
+     * Checks whether JWT token is expired by provided time.
+     *
+     * @param token JWT token to be checked
+     * @param date  date to check expiration of JWT token
+     * @return true - if JWT token expired, false - otherwise
+     */
+    boolean isExpired(String token,
+                      Date date);
+
+    /**
+     * Returns type of JWT token.
+     *
+     * @param token JWT token
+     * @return type of JWT token
+     */
+    String getType(String token);
 
     /**
      * Returns payload of JWT token as a Map.

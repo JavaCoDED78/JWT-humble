@@ -1,5 +1,6 @@
-package io.github.javacoded78.jwthumble;
+package io.github.javacoded78.jwthumble.service;
 
+import io.github.javacoded78.jwthumble.config.TokenParameters;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,21 +17,23 @@ class TokenServiceImplTest {
 
     private static final String SECRET_KEY = "c29tZWxvbmdzZWNyZXRzdHJpbmdmb3JleGFtcGxlYW5kaXRuZWVkc3RvYmVsb25nDQo=";
     private static TokenServiceImpl tokenService;
-
     private static String subject;
     private static Duration duration;
+    private static String type;
 
     @BeforeAll
     static void setup() {
         tokenService = new TokenServiceImpl(SECRET_KEY);
         subject = "testSubject";
         duration = Duration.ofMinutes(30);
+        type = "any";
     }
 
     @Test
-    void getSubject_ReturnsValidToken() {
+    void create_ReturnsValidToken() {
         TokenParameters params = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .build();
@@ -41,9 +44,25 @@ class TokenServiceImplTest {
     }
 
     @Test
+    void create_ExistingToken_ReturnsExistingToken() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String existingToken = tokenService.create(params);
+
+        String token = tokenService.create(params);
+
+        assertEquals(existingToken, token);
+    }
+
+    @Test
     void isExpired_ValidToken_ReturnsFalse() {
         TokenParameters params = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .build();
@@ -58,6 +77,7 @@ class TokenServiceImplTest {
 
         TokenParameters params = TokenParameters.builder(
                         subject,
+                        type,
                         duration
                 )
                 .build();
@@ -73,7 +93,11 @@ class TokenServiceImplTest {
 
     @Test
     void has_ValidClaim_ReturnsTrue() {
-        TokenParameters params = TokenParameters.builder(subject, duration)
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
                 .claim("testKey", "testValue")
                 .build();
 
@@ -83,7 +107,11 @@ class TokenServiceImplTest {
 
     @Test
     void has_InvalidClaim_ReturnsFalse() {
-        TokenParameters params = TokenParameters.builder(subject, duration)
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
                 .claim("testKey", "testValue")
                 .build();
 
@@ -92,14 +120,29 @@ class TokenServiceImplTest {
     }
 
     @Test
+    void create_ReturnsCorrectType() {
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
+                .build();
+        String token = tokenService.create(params);
+
+        assertEquals(type, tokenService.getType(token));
+    }
+
+    @Test
     void claims_ReturnsCorrectClaims() {
-        String subject = "testSubject";
-        Duration duration = Duration.ofMinutes(30);
         Map<String, Object> customClaims = new HashMap<>();
         customClaims.put("key1", "value1");
         customClaims.put("key2", 123);
 
-        TokenParameters params = TokenParameters.builder(subject, duration)
+        TokenParameters params = TokenParameters.builder(
+                        subject,
+                        type,
+                        duration
+                )
                 .claims(customClaims)
                 .build();
 
