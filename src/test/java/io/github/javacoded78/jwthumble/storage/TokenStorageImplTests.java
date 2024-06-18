@@ -141,5 +141,6 @@ class TokenStorageImplTests {
         String existingToken = tokenStorage.get(params);
         assertNull(existingToken);
     }
+
 }
 
