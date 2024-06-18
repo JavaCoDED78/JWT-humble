@@ -47,7 +47,7 @@
         <checkstyle.version>3.3.1</checkstyle.version>
         <junit-version>5.10.2</junit-version>
         <testcontainers.version>1.19.8</testcontainers.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
     <dependencies>
