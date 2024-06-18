@@ -2,6 +2,7 @@ package io.github.javacoded78.jwthumble.service;
 
 import io.github.javacoded78.jwthumble.config.TokenParameters;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -45,6 +46,16 @@ public interface TokenService {
      * @return "sub" of JWT token
      */
     String getSubject(String token);
+
+    /**
+     * Checks whether JWT token is expired by provided time.
+     *
+     * @param token JWT token to be checked
+     * @param date  date to check expiration of JWT token
+     * @return true - if JWT token expired, false - otherwise
+     */
+    boolean isExpired(String token,
+                      Date date);
 
     /**
      * Returns type of JWT token.
