@@ -2,6 +2,9 @@ package io.github.javacoded78.jwthumble.storage;
 
 import io.github.javacoded78.jwthumble.config.TokenParameters;
 
+/**
+ * TokenStorage interface.
+ */
 public interface TokenStorage {
 
     /**

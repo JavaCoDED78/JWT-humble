@@ -1,5 +1,8 @@
 package io.github.javacoded78.jwthumble.config.redis;
 
+/**
+ * Schema interface for RedisTokenStorage.
+ */
 public interface RedisSchema {
 
     /**

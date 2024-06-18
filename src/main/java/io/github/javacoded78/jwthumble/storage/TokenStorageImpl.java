@@ -5,6 +5,9 @@ import io.github.javacoded78.jwthumble.config.TokenParameters;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Basic implementation of TokenStorage.
+ */
 public class TokenStorageImpl implements TokenStorage {
 
     /**

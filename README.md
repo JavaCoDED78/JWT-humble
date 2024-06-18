@@ -138,7 +138,7 @@ public class Main {
     public static void main(String[] args) {
         String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
         Map<String, Object> claims=tokenService.claims(token);
-        claims.forEach((key,value)->System.out.println(key+" "+value));
+        claims.forEach((key,value)->System.out.println(key + " " + value));
     }
 }
 
