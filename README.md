@@ -20,6 +20,7 @@ This repository is an open-source Java library for fast and convenient using of 
     * [Get subject from token](#get-subject-from-jwt-token)
     * [Get type from token](#get-type-from-jwt-token)
     * [Get claims from token](#get-claims-from-jwt-token)
+    * [Get claim from token](#get-claim-from-jwt-token)
 * [How to contribute](#how-to-contribute)
 
 ## How to use
@@ -239,6 +240,21 @@ public class Main {
         String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
         Map<String, Object> claims=tokenService.claims(token);
         claims.forEach((key,value)->System.out.println(key + " " + value));
+    }
+}
+
+```
+
+### Get claim from JWT token
+
+To get claim by its name from JWT token payload call method `claim(String token, String key)`on `TokenService` object.
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
+        String claim = (String) tokenService.claim(token, "subject");
+        System.out.println(claim);
     }
 }
 
