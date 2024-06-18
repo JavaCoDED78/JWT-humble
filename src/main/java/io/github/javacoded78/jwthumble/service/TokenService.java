@@ -1,4 +1,6 @@
-package io.github.javacoded78.jwthumble;
+package io.github.javacoded78.jwthumble.service;
+
+import io.github.javacoded78.jwthumble.config.TokenParameters;
 
 import java.util.Map;
 
@@ -32,7 +34,9 @@ public interface TokenService {
      * @return true - if JWT token has a provided key-value pair in payload,
      * false - otherwise
      */
-    boolean has(String token, String key, Object value);
+    boolean has(String token,
+                String key,
+                Object value);
 
     /**
      * Returns "sub" of JWT token.
@@ -41,6 +45,14 @@ public interface TokenService {
      * @return "sub" of JWT token
      */
     String getSubject(String token);
+
+    /**
+     * Returns type of JWT token.
+     *
+     * @param token JWT token
+     * @return type of JWT token
+     */
+    String getType(String token);
 
     /**
      * Returns payload of JWT token as a Map.

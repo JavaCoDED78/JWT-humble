@@ -24,8 +24,15 @@ JWT tokens in your Java applications.
 
 At first, you need to install this library.
 
-Until we publish it to Maven Central, you need to download source code, compile
-it with `mvn package` and add `jwt-***.jar` as a dependency to your project.
+With Maven add dependency to your `pom.xml`.
+
+```xml
+<dependency>
+  <groupId>io.github.javacoded78</groupId>
+  <artifactId>jwt-humble</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
 
 This library provides simple and convenient usage.
 
@@ -131,7 +138,7 @@ public class Main {
     public static void main(String[] args) {
         String token="eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbmRyb3Nvcjk5QGdtYWlsLmNvbSIsImlkIjozLCJyb2xlcyI6WyJST0xFX1VTRVIiXSwiZXhwIjoxNzE3MTQ1MDIxfQ.w8ZFLFsKf7Qs9_dNb0WzdoyAIpWtfeEyqLfNI_G16_6NHbGwCRbeVVm_a_DzckytsyGYHTWRlZdi_gWK-HjrXg";
         Map<String, Object> claims=tokenService.claims(token);
-        claims.forEach((key,value)->System.out.println(key+" "+value));
+        claims.forEach((key,value)->System.out.println(key + " " + value));
     }
 }
 

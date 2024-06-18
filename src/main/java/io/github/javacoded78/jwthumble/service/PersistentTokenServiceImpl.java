@@ -1,5 +1,8 @@
-package io.github.javacoded78.jwthumble;
+package io.github.javacoded78.jwthumble.service;
 
+import io.github.javacoded78.jwthumble.config.TokenParameters;
+import io.github.javacoded78.jwthumble.storage.TokenStorage;
+import io.github.javacoded78.jwthumble.storage.TokenStorageImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -12,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Basic implementation of TokenService.
+ * Implementation of TokenService with JWT token storage.
  */
-public class TokenServiceImpl implements TokenService {
+public class PersistentTokenServiceImpl implements TokenService {
 
     /**
      * Secret key for verifying JWT token.
@@ -22,26 +25,56 @@ public class TokenServiceImpl implements TokenService {
     private final SecretKey key;
 
     /**
-     * Creates io.github.javacoded78.jwthumble.TokenServiceImpl object.
+     * TokenStorage for accessing persistence layer.
+     */
+    private final TokenStorage tokenStorage;
+
+    /**
+     * Name of field in JWT token for its type.
+     */
+    public static final String TOKEN_TYPE_KEY = "tokenType";
+
+    /**
+     * Creates an object with provided secret and TokenStorageImpl.
      *
      * @param secret secret of key for JWT token generation
      */
-    public TokenServiceImpl(final String secret) {
+    public PersistentTokenServiceImpl(final String secret) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.tokenStorage = new TokenStorageImpl();
+    }
+
+    /**
+     * Creates an object.
+     *
+     * @param secret       secret of key for JWT token generation
+     * @param tokenStorage implementation of JWT token storage interface
+     */
+    public PersistentTokenServiceImpl(final String secret,
+                                      final TokenStorage tokenStorage) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.tokenStorage = tokenStorage;
     }
 
     @Override
     public String create(final TokenParameters params) {
+        String token = tokenStorage.get(params);
+        if (token != null) {
+            return token;
+        }
         Claims claims = Jwts.claims()
                 .subject(params.getSubject())
                 .add(params.getClaims())
+                .add(TOKEN_TYPE_KEY, params.getType())
                 .build();
-        return Jwts.builder()
+        token = Jwts.builder()
                 .claims(claims)
                 .issuedAt(params.getIssuedAt())
                 .expiration(params.getExpiredAt())
                 .signWith(key)
                 .compact();
+        tokenStorage.save(token, params);
+        return token;
     }
 
     @Override
@@ -83,6 +116,17 @@ public class TokenServiceImpl implements TokenService {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    @Override
+    public String getType(final String token) {
+        return Jwts
+                .parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get(TOKEN_TYPE_KEY, String.class);
     }
 
     @Override
