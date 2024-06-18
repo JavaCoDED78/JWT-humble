@@ -5,6 +5,7 @@ import io.github.javacoded78.jwthumble.config.redis.DefaultRedisSchema;
 import io.github.javacoded78.jwthumble.config.redis.RedisSchema;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * Implementation of TokenStorage based on Redis.
@@ -41,6 +42,48 @@ public class RedisTokenStorageImpl implements TokenStorage {
                                  final RedisSchema redisSchema) {
         this.jedisPool = jedisPool;
         this.redisSchema = redisSchema;
+    }
+
+    /**
+     * Creates an object.
+     *
+     * @param host Redis host
+     * @param port Redis port
+     */
+    public RedisTokenStorageImpl(final String host,
+                                 final int port) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setJmxEnabled(false);
+        this.jedisPool = new JedisPool(
+                config,
+                host,
+                port
+        );
+        this.redisSchema = new DefaultRedisSchema();
+    }
+
+    /**
+     * Creates an object.
+     *
+     * @param host     Redis host
+     * @param port     Redis port
+     * @param user     Redis username
+     * @param password Redis password
+     */
+    public RedisTokenStorageImpl(final String host,
+                                 final int port,
+                                 final String user,
+                                 final String password) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setJmxEnabled(false);
+        this.jedisPool = new JedisPool(
+                config,
+                host,
+                port,
+                user,
+                password
+        );
+        this.redisSchema = new DefaultRedisSchema();
     }
 
     @Override
