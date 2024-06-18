@@ -1,3 +1,5 @@
+architect:
+  - javacoded78
 assets:
   settings.xml: javacoded78/secrets#assets/settings.xml
   secring.gpg: javacoded78/secrets#assets/Andrei Soroka_0x872A42FB_SECRET.gpg

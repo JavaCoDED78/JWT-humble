@@ -122,4 +122,16 @@ public class TokenServiceImpl implements TokenService {
         return new HashMap<>(claims.getPayload());
     }
 
+    @Override
+    public Object claim(final String token,
+                        final String key) {
+        Jws<Claims> claims = Jwts
+                .parser()
+                .verifyWith(this.key)
+                .build()
+                .parseSignedClaims(token);
+        return claims.getPayload()
+                .get(key);
+    }
+
 }
